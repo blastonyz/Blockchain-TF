@@ -1,4 +1,5 @@
-# Compiler files
+# Compiler file
+Makefiles
 cache/
 out/
 
@@ -12,3 +13,5 @@ docs/
 
 # Dotenv file
 .env
+
+
