@@ -171,8 +171,8 @@ contract CCNFT is  ERC721Enumerable, Ownable, ReentrancyGuard {
         
 // Transferir los fondos desde fundsCollector al (_msgSender()).
         require(claimValue > 0,"Don't have value to claim");
-        require(fundsToken.balanceOf(fundsCollector) >= totalClaim, "Insufficient balance in fundsCollector");
-        uint256 allowance = fundsToken.allowance(msg.sender, address(fundsToken));
+        require(fundsToken.balanceOf(fundsCollector) >= totalClaim, "Ins balance in Collector");
+        uint256 allowance = fundsToken.allowance(fundsCollector, address(this));
         require(allowance >= totalClaim, "Allowance too low");
         bool success = fundsToken.transferFrom(fundsCollector, _msgSender(), totalClaim);
         //bool success = IERC20(fundsCollector).transfer(msg.sender, totalClaim);
@@ -181,7 +181,7 @@ contract CCNFT is  ERC721Enumerable, Ownable, ReentrancyGuard {
 
 
 // Funcion de compra de NFT que esta en venta.
-    function trade(uint tokenId) external nonReentrant { // Parámetro: ID del token.
+    function trade(uint8 tokenId) external nonReentrant { // Parámetro: ID del token.
         require(canTrade,"Can't trade this token"); // Verificación del comercio de NFTs (canTrade). Incluir un mensaje de falla.
         require(_exists(tokenId),"Token dont exist"); // Verificación de existencia del tokenId (_exists). Incluir un mensaje de falla.
 // Verificamos que el comprador (el que llama a la función) no sea el propietario actual del NFT. Si lo es, la transacción falla con el mensaje "Buyer is the Seller".
@@ -202,13 +202,7 @@ contract CCNFT is  ERC721Enumerable, Ownable, ReentrancyGuard {
         console.log("balance ",balance);
          bool success = fundsToken.transferFrom(msg.sender, seller, tokenSale.price);
          require(success, "Transfer failed");
-      
-/*
-// Transferencia de tarifa de comercio (calculada como un porcentaje del valor del NFT) del comprador al feesCollector.
-       if (!success) {
-            revert(); // Incluir un mensaje de falla.
-        }*/
-  
+    
         emit Trade(msg.sender,seller,tokenId,tokenSale.price); // Registro de dirección del comprador, dirección del vendedor, tokenId, y precio de venta.  
 
         _safeTransfer(ownerOf(tokenId),msg.sender,tokenId,bytes("")); // Transferencia del NFT del propietario actual al comprador.
@@ -221,7 +215,7 @@ contract CCNFT is  ERC721Enumerable, Ownable, ReentrancyGuard {
 
 
 // Función para poner en venta un NFT.
-    function putOnSale(uint tokenId, uint _price) external { // Parámetros: ID y precio del token.
+    function putOnSale(uint8 tokenId, uint _price) external { // Parámetros: ID y precio del token.
         require(canTrade,"Dont have Trade permission"); // Verificación de operaciones de comercio (canTrade). Incluir un mensaje de falla.
 
         require(_exists(tokenId),"Token don't exist"); // Verificción de existencia del tokenId mediante "_exists". Incluir un mensaje de falla.
@@ -241,7 +235,7 @@ contract CCNFT is  ERC721Enumerable, Ownable, ReentrancyGuard {
 
 
 // Función de retiro de venta de NFT.
-    function removeFromSale(uint256 tokenId) external { // Parámetro: ID del token.
+    function removeFromSale(uint8 tokenId) external { // Parámetro: ID del token.
         require(canTrade,"Dont have Trade permission"); // Verificación de permisos de transacciones (canTrade). Incluir un mensaje de falla.
         require(_exists(tokenId),"Token don't exist"); // Verificación de existencia del token. Incluir un mensaje de falla.
         require(msg.sender == ownerOf(tokenId)); // Verificación del _msgSender() es el propietario del token. Incluir un mensaje de falla.
@@ -351,9 +345,6 @@ contract CCNFT is  ERC721Enumerable, Ownable, ReentrancyGuard {
     
         (bool succes, ) = owner().call{value: address(this).balance}(""); 
         require(succes,"transfer fail");
-    
-       
-       
     }   
 
 // Retiro por parte del propietario de tokens ERC20.
@@ -419,7 +410,7 @@ contract CCNFT is  ERC721Enumerable, Ownable, ReentrancyGuard {
     // NOT SUPPORTED FUNCTIONS
 
 // Funciones para deshabilitar las transferencias de NFTs,
-
+/*
     function transferFrom(address, address, uint256) 
         public 
         pure
@@ -442,7 +433,7 @@ contract CCNFT is  ERC721Enumerable, Ownable, ReentrancyGuard {
         revert("Not Allowed");
     }
 
-
+*/
     // Compliance required by Solidity
 
 // Funciones para asegurar que el contrato cumple con los estándares requeridos por ERC721 y ERC721Enumerable.
